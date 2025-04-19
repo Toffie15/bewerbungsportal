@@ -6,6 +6,7 @@
   <title>Bewerbungsportal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    /* Dark Mode und allgemeines Design */
     :root {
       --bg-dark: #0f1117;
       --card-dark: #1b1e24;
@@ -15,7 +16,6 @@
       --input-bg: #2a2d34;
       --danger: #e53935;
       --danger-hover: #c62828;
-      --success: #4caf50;
     }
 
     * {
@@ -122,11 +122,6 @@
       text-align: left;
       position: relative;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease;
-    }
-
-    .bewerbung-eintrag:hover {
-      transform: translateY(-5px);
     }
 
     .delete-button {
@@ -146,13 +141,20 @@
       background-color: var(--danger-hover);
     }
 
-    .search-bar {
-      padding: 10px;
-      background-color: var(--input-bg);
-      border-radius: 10px;
-      color: #fff;
-      width: 100%;
+    .progress-bar {
+      background-color: var(--accent);
+      height: 8px;
+      border-radius: 4px;
+      margin-top: 10px;
+      width: 0;
     }
+
+    /* Dark Mode Umschalter */
+    .dark-mode {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+    }
+
   </style>
 </head>
 <body>
@@ -163,6 +165,7 @@
       <a href="#login" onclick="changeLang('de')">Login</a>
       <a href="#bewerbung" onclick="changeLang('de')">Bewerbung</a>
       <a href="#management" onclick="changeLang('de')">Management</a>
+      <a href="#faq" onclick="changeLang('de')">FAQ</a>
       <a href="#start" onclick="changeLang('en')">EN</a>
     </nav>
   </header>
@@ -185,7 +188,7 @@
     <section id="bewerbung">
       <h2>Online Bewerbung</h2>
       <form onsubmit="handleBewerbung(event)">
-        <input type="text" id="bewerberName" placeholder="Dein Name" required pattern="[A-Za-z\s]+" />
+        <input type="text" id="bewerberName" placeholder="Dein Name" required />
         <input type="email" id="bewerberEmail" placeholder="Deine E-Mail-Adresse" required />
         <textarea id="bewerberNachricht" placeholder="Deine Nachricht..." rows="5" required></textarea>
         <input type="file" id="lebenslauf" accept="application/pdf" required />
@@ -196,16 +199,22 @@
     <section id="management">
       <h2>Management</h2>
       <p>Verwalte deine Bewerbungen bequem an einem Ort.</p>
-      <input type="text" class="search-bar" id="search" oninput="filterBewerbungen()" placeholder="Suche nach Bewerbungen..." />
+      <div id="bewerbungsliste"></div>
     </section>
 
     <section id="admin-section">
       <h2>Admin Dashboard</h2>
       <p>Verwalte alle eingegangenen Bewerbungen hier:</p>
-      <div id="bewerbungsliste"></div>
+      <div id="bewerbungsliste-admin"></div>
       <button onclick="exportBewerbungen()">Export als CSV</button>
-      <button onclick="exportBewerbungenPDF()">Export als PDF</button>
+      <button onclick="toggleDarkMode()">Dark Mode umschalten</button>
     </section>
+
+    <section id="faq">
+      <h2>Häufige Fragen</h2>
+      <p>Hier findest du Antworten auf häufig gestellte Fragen.</p>
+    </section>
+
   </main>
 
   <footer>
@@ -245,10 +254,13 @@
         email,
         nachricht,
         datei,
-        status: "In Bearbeitung"
+        status: 'In Bearbeitung',
+        bewertung: 0,
+        kommentare: []
       };
 
       bewerbungsliste.push(eintrag);
+
       alert("Bewerbung erfolgreich übermittelt!");
 
       document.getElementById('bewerberName').value = "";
@@ -262,7 +274,7 @@
     }
 
     function zeigeBewerbungen() {
-      const liste = document.getElementById("bewerbungsliste");
+      const liste = document.getElementById("bewerbungsliste-admin");
       liste.innerHTML = "";
       bewerbungsliste.forEach((b, index) => {
         const eintrag = document.createElement("div");
@@ -272,7 +284,7 @@
           <small>${b.email}</small>
           <p>${b.nachricht}</p>
           <p><em>Lebenslauf: ${b.datei}</em></p>
-          <p><strong>Status: </strong>${b.status}</p>
+          <p>Status: ${b.status}</p>
           <button class="delete-button" onclick="loescheBewerbung(${index})">Löschen</button>
         `;
         liste.appendChild(eintrag);
@@ -288,10 +300,10 @@
 
     function exportBewerbungen() {
       const csvRows = [
-        ["Name", "E-Mail", "Nachricht", "Lebenslauf"]
+        ["Name", "E-Mail", "Nachricht", "Lebenslauf", "Status"]
       ];
       bewerbungsliste.forEach(b => {
-        csvRows.push([b.name, b.email, b.nachricht, b.datei]);
+        csvRows.push([b.name, b.email, b.nachricht, b.datei, b.status]);
       });
       const csvData = csvRows.map(row => row.join(",")).join("\n");
       const blob = new Blob([csvData], { type: 'text/csv' });
@@ -303,36 +315,39 @@
       URL.revokeObjectURL(url);
     }
 
-    function exportBewerbungenPDF() {
-      // Beispielhafte Funktion zum Exportieren als PDF
-      alert("Export als PDF wird noch implementiert.");
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
     }
 
-    function filterBewerbungen() {
-      const filterText = document.getElementById('search').value.toLowerCase();
-      const filteredBewerbungen = bewerbungsliste.filter(bewerbung => 
-        bewerbung.name.toLowerCase().includes(filterText) || 
-        bewerbung.email.toLowerCase().includes(filterText)
-      );
-      const liste = document.getElementById("bewerbungsliste");
-      liste.innerHTML = "";
-      filteredBewerbungen.forEach((b, index) => {
-        const eintrag = document.createElement("div");
-        eintrag.classList.add("bewerbung-eintrag");
-        eintrag.innerHTML = `
-          <strong>${b.name}</strong><br>
-          <small>${b.email}</small>
-          <p>${b.nachricht}</p>
-          <p><em>Lebenslauf: ${b.datei}</em></p>
-          <p><strong>Status: </strong>${b.status}</p>
-        `;
-        liste.appendChild(eintrag);
-      });
-    }
+    function changeLang(lang) {
+      const text = {
+        de: {
+          start: "Willkommen!",
+          login: "Login für Administratoren",
+          bewerbung: "Online Bewerbung",
+          management: "Management",
+          adminDashboard: "Admin Dashboard",
+          faq: "FAQ",
+        },
+        en: {
+          start: "Welcome!",
+          login: "Admin Login",
+          bewerbung: "Online Application",
+          management: "Management",
+          adminDashboard: "Admin Dashboard",
+          faq: "FAQ",
+        },
+      };
+      document.querySelector('nav a.active').classList.remove('active');
+      const newLang = document.querySelector(`nav a[href='#${lang}']`);
+      newLang.classList.add('active');
 
-    function changeLang(language) {
-      // Sprachwechsel-Logik hinzufügen
-      alert(`Sprache geändert zu ${language.toUpperCase()}`);
+      document.getElementById('start').innerHTML = `<h2>${text[lang].start}</h2><p>Hier kannst du dich schnell und professionell bewerben.</p>`;
+      document.getElementById('login').innerHTML = `<h2>${text[lang].login}</h2>...`;
+      document.getElementById('bewerbung').innerHTML = `<h2>${text[lang].bewerbung}</h2>...`;
+      document.getElementById('management').innerHTML = `<h2>${text[lang].management}</h2>...`;
+      document.getElementById('faq').innerHTML = `<h2>${text[lang].faq}</h2>...`;
+      document.getElementById('admin-section').innerHTML = `<h2>${text[lang].adminDashboard}</h2>...`;
     }
   </script>
 </body>

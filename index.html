@@ -1,372 +1,40 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bewerbungsportal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    /* Grundlegende Variablen für das Design */
-    :root {
-      --bg-dark: #0f1117;
-      --card-dark: #1b1e24;
-      --accent: #00bcd4;
-      --accent-hover: #00acc1;
-      --text-light: #f9f9f9;
-      --input-bg: #2a2d34;
-      --danger: #e53935;
-      --danger-hover: #c62828;
-      --primary-bg: #f0f1f6;
-      --footer-bg: #212121;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: var(--primary-bg);
-      color: var(--text-light);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    header {
-      background-color: var(--card-dark);
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    nav a {
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: color 0.3s ease;
-    }
-
-    nav a.active {
-      color: var(--accent);
-    }
-
-    nav a:hover {
-      color: var(--accent);
-    }
-
-    button {
-      background-color: var(--accent);
-      color: #121212;
-      padding: 14px 30px;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: var(--accent-hover);
-    }
-
-    main {
-      margin-top: 20px;
-      padding: 20px;
-      flex-grow: 1;
-      background-color: var(--primary-bg);
-    }
-
-    section {
-      margin: 40px auto;
-      max-width: 900px;
-      padding: 30px;
-      background-color: var(--card-dark);
-      border-radius: 16px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    input, textarea {
-      padding: 14px 18px;
-      width: 100%;
-      border: none;
-      border-radius: 10px;
-      background-color: var(--input-bg);
-      color: #fff;
-      font-size: 1rem;
-      transition: background-color 0.3s ease;
-    }
-
-    input:focus, textarea:focus {
-      outline: 2px solid var(--accent);
-    }
-
-    footer {
-      margin-top: auto;
-      font-size: 0.85em;
-      opacity: 0.6;
-      background-color: var(--footer-bg);
-      padding: 20px;
-      text-align: center;
-    }
-
-    .bewerbung-eintrag {
-      background-color: var(--input-bg);
-      margin: 15px 0;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: left;
-      position: relative;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .delete-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: var(--danger);
-      border: none;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .delete-button:hover {
-      background-color: var(--danger-hover);
-    }
-
-    .dark-mode {
-      background-color: #121212;
-      color: #fff;
-    }
-
-    /* Responsivität */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-
-      header {
-        padding: 10px;
-      }
-
-      section {
-        padding: 20px;
-      }
-
-      form input, form textarea {
-        font-size: 0.9rem;
-      }
-
-      button {
-        padding: 12px 24px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Server Status</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Bewerbungsportal</h1>
-    <nav>
-      <a href="#start" onclick="changeLang('de')" class="active">Startseite</a>
-      <a href="#login" onclick="changeLang('de')">Login</a>
-      <a href="#bewerbung" onclick="changeLang('de')">Bewerbung</a>
-      <a href="#management" onclick="changeLang('de')">Management</a>
-      <a href="#start" onclick="changeLang('en')">EN</a>
-      <button onclick="toggleDarkMode()">🌙 / 🌞</button>
-    </nav>
-  </header>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/status">Server Status</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <main>
-    <section id="start">
-      <h2>Willkommen!</h2>
-      <p>Erstellen Sie Ihre Bewerbung in wenigen einfachen Schritten und starten Sie Ihre Karriere.</p>
-    </section>
+    <main>
+        <h1>Willkommen auf der Game Server Status Seite</h1>
+        <div id="serverStatus">
+            <h2>Server Status</h2>
+            <p>Aktueller Status: <span id="status">Lädt...</span></p>
+            <button id="startStopButton">Starten/Stoppen</button>
+        </div>
 
-    <section id="login">
-      <h2>Login für Administratoren</h2>
-      <form onsubmit="handleLogin(event)">
-        <input type="text" id="username" placeholder="Benutzername" required />
-        <input type="password" id="password" placeholder="Passwort" required />
-        <button type="submit">Einloggen</button>
-      </form>
-    </section>
+        <div id="usageStats">
+            <h2>Nutzungsstatistiken</h2>
+            <p>Aktuelle Spieler: <span id="playersCount">Lädt...</span></p>
+        </div>
+    </main>
 
-    <section id="bewerbung">
-      <h2>Online Bewerbung</h2>
-      <form onsubmit="handleBewerbung(event)">
-        <input type="text" id="bewerberName" placeholder="Ihr Name" required />
-        <input type="email" id="bewerberEmail" placeholder="Ihre E-Mail-Adresse" required />
-        <textarea id="bewerberNachricht" placeholder="Ihre Nachricht..." rows="5" required></textarea>
-        <input type="file" id="lebenslauf" accept="application/pdf" required />
-        <button type="submit">Bewerbung absenden</button>
-      </form>
-    </section>
+    <footer>
+        <p>© 2025 Game Server Website</p>
+    </footer>
 
-    <section id="management">
-      <h2>Management</h2>
-      <p>Verwalten Sie Ihre Bewerbungen einfach und effizient.</p>
-    </section>
-
-    <section id="admin-section">
-      <h2>Admin Dashboard</h2>
-      <p>Verwalten Sie alle eingegangenen Bewerbungen hier:</p>
-      <div id="bewerbungsliste"></div>
-      <button onclick="exportBewerbungen()">Export als CSV</button>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 Bewerbungsportal – Alle Rechte vorbehalten</p>
-  </footer>
-
-  <script>
-    let isAdmin = false;
-    const bewerbungsliste = [];
-
-    function handleLogin(event) {
-      event.preventDefault();
-      const user = document.getElementById('username').value;
-      const pass = document.getElementById('password').value;
-
-      if (user === "admin" && pass === "passwort") {
-        alert("Login erfolgreich!");
-        isAdmin = true;
-        document.getElementById("admin-section").style.display = "block";
-        zeigeBewerbungen();
-        document.getElementById("login").style.display = "none";
-      } else {
-        alert("Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.");
-      }
-    }
-
-    function handleBewerbung(event) {
-      event.preventDefault();
-      const name = document.getElementById('bewerberName').value;
-      const email = document.getElementById('bewerberEmail').value;
-      const nachricht = document.getElementById('bewerberNachricht').value;
-      const fileInput = document.getElementById('lebenslauf');
-      const datei = fileInput.files[0] ? fileInput.files[0].name : "Keine Datei";
-
-      const eintrag = {
-        name,
-        email,
-        nachricht,
-        datei,
-        status: "In Bearbeitung"
-      };
-
-      bewerbungsliste.push(eintrag);
-
-      alert("Bewerbung erfolgreich übermittelt!");
-
-      document.getElementById('bewerberName').value = "";
-      document.getElementById('bewerberEmail').value = "";
-      document.getElementById('bewerberNachricht').value = "";
-      document.getElementById('lebenslauf').value = "";
-
-      if (isAdmin) {
-        zeigeBewerbungen();
-      }
-    }
-
-    function zeigeBewerbungen() {
-      const liste = document.getElementById("bewerbungsliste");
-      liste.innerHTML = "";
-      bewerbungsliste.forEach((b, index) => {
-        const eintrag = document.createElement("div");
-        eintrag.classList.add("bewerbung-eintrag");
-        eintrag.innerHTML = `
-          <strong>${b.name}</strong><br>
-          <small>${b.email}</small>
-          <p>${b.nachricht}</p>
-          <p><em>Lebenslauf: ${b.datei}</em></p>
-          <p>Status: ${b.status}</p>
-          <button class="delete-button" onclick="loescheBewerbung(${index})">Löschen</button>
-        `;
-        liste.appendChild(eintrag);
-      });
-    }
-
-    function loescheBewerbung(index) {
-      if (confirm("Möchten Sie diese Bewerbung wirklich löschen?")) {
-        bewerbungsliste.splice(index, 1);
-        zeigeBewerbungen();
-      }
-    }
-
-    function exportBewerbungen() {
-      const csvRows = [
-        ["Name", "E-Mail", "Nachricht", "Lebenslauf", "Status"]
-      ];
-      bewerbungsliste.forEach(b => {
-        csvRows.push([b.name, b.email, b.nachricht, b.datei, b.status]);
-      });
-      const csvData = csvRows.map(row => row.join(",")).join("\n");
-      const blob = new Blob([csvData], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'bewerbungen.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function changeLang(lang) {
-      const text = {
-        de: {
-          start: "Willkommen!",
-          login: "Login für Administratoren",
-          bewerbung: "Online Bewerbung",
-          management: "Management",
-          adminDashboard: "Admin Dashboard",
-          export: "Export als CSV",
-          logout: "Abmelden",
-        },
-        en: {
-          start: "Welcome!",
-          login: "Admin Login",
-          bewerbung: "Online Application",
-          management: "Management",
-          adminDashboard: "Admin Dashboard",
-          export: "Export as CSV",
-          logout: "Logout",
-        },
-      };
-      document.querySelector('nav a.active').classList.remove('active');
-      const newLang = document.querySelector(`nav a[href='#${lang}']`);
-      newLang.classList.add('active');
-      
-      document.getElementById('start').innerHTML = `<h2>${text[lang].start}</h2><p>Erstellen Sie Ihre Bewerbung in wenigen einfachen Schritten und starten Sie Ihre Karriere.</p>`;
-      document.getElementById('login').innerHTML = `<h2>${text[lang].login}</h2>...`;
-      document.getElementById('bewerbung').innerHTML = `<h2>${text[lang].bewerbung}</h2>...`;
-      document.getElementById('management').innerHTML = `<h2>${text[lang].management}</h2>...`;
-      document.getElementById('admin-section').innerHTML = `<h2>${text[lang].adminDashboard}</h2>...`;
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>

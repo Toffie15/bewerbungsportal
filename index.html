@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bewerbungsportal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
     :root {
       --bg-dark: #0f1117;
@@ -31,14 +32,14 @@
       min-height: 100vh;
     }
 
-    header, nav, main, footer {
-      padding: 20px;
-      text-align: center;
-    }
-
     header {
       background-color: var(--card-dark);
+      padding: 20px;
+      text-align: center;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     nav a {
@@ -47,6 +48,10 @@
       text-decoration: none;
       font-size: 1rem;
       transition: color 0.3s ease;
+    }
+
+    nav a.active {
+      color: var(--accent);
     }
 
     nav a:hover {
@@ -59,7 +64,7 @@
       padding: 30px;
       background-color: var(--card-dark);
       border-radius: 16px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
     }
 
     form {
@@ -79,11 +84,6 @@
       font-size: 1rem;
     }
 
-    input[type="file"] {
-      background-color: var(--card-dark);
-      color: var(--text-light);
-    }
-
     button {
       padding: 14px 30px;
       background-color: var(--accent);
@@ -97,13 +97,6 @@
 
     button:hover {
       background-color: var(--accent-hover);
-    }
-
-    .calendar iframe {
-      width: 100%;
-      height: 600px;
-      border: none;
-      border-radius: 10px;
     }
 
     footer {
@@ -128,7 +121,7 @@
       border-radius: 10px;
       text-align: left;
       position: relative;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
     .delete-button {
@@ -153,10 +146,11 @@
   <header>
     <h1>Bewerbungsportal</h1>
     <nav>
-      <a href="#start">Startseite</a>
-      <a href="#login">Login</a>
-      <a href="#bewerbung">Bewerbung</a>
-      <a href="#management">Management</a>
+      <a href="#start" onclick="changeLang('de')" class="active">Startseite</a>
+      <a href="#login" onclick="changeLang('de')">Login</a>
+      <a href="#bewerbung" onclick="changeLang('de')">Bewerbung</a>
+      <a href="#management" onclick="changeLang('de')">Management</a>
+      <a href="#start" onclick="changeLang('en')">EN</a>
     </nav>
   </header>
 
@@ -182,22 +176,21 @@
         <input type="email" id="bewerberEmail" placeholder="Deine E-Mail-Adresse" required />
         <textarea id="bewerberNachricht" placeholder="Deine Nachricht..." rows="5" required></textarea>
         <input type="file" id="lebenslauf" accept="application/pdf" required />
+        <div class="g-recaptcha" data-sitekey="your-recaptcha-site-key"></div>
         <button type="submit">Bewerbung absenden</button>
       </form>
     </section>
 
     <section id="management">
-      <h2>Terminübersicht</h2>
-      <p>Behalte deine Termine im Blick:</p>
-      <div class="calendar">
-        <iframe src="https://calendar.google.com/calendar/embed?src=de.german%23holiday%40group.v.calendar.google.com&ctz=Europe%2FBerlin"></iframe>
-      </div>
+      <h2>Management</h2>
+      <p>Verwalte deine Bewerbungen bequem an einem Ort.</p>
     </section>
 
     <section id="admin-section">
       <h2>Admin Dashboard</h2>
       <p>Verwalte alle eingegangenen Bewerbungen hier:</p>
       <div id="bewerbungsliste"></div>
+      <button onclick="exportBewerbungen()">Export als CSV</button>
     </section>
   </main>
 
@@ -276,6 +269,56 @@
         bewerbungsliste.splice(index, 1);
         zeigeBewerbungen();
       }
+    }
+
+    function exportBewerbungen() {
+      const csvRows = [
+        ["Name", "E-Mail", "Nachricht", "Lebenslauf"]
+      ];
+      bewerbungsliste.forEach(b => {
+        csvRows.push([b.name, b.email, b.nachricht, b.datei]);
+      });
+      const csvData = csvRows.map(row => row.join(",")).join("\n");
+      const blob = new Blob([csvData], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bewerbungen.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function changeLang(lang) {
+      // Übersetzungen im Frontend für Deutsch und Englisch
+      const text = {
+        de: {
+          start: "Willkommen!",
+          login: "Login für Administratoren",
+          bewerbung: "Online Bewerbung",
+          management: "Management",
+          adminDashboard: "Admin Dashboard",
+          export: "Export als CSV",
+          logout: "Abmelden",
+        },
+        en: {
+          start: "Welcome!",
+          login: "Admin Login",
+          bewerbung: "Online Application",
+          management: "Management",
+          adminDashboard: "Admin Dashboard",
+          export: "Export as CSV",
+          logout: "Logout",
+        },
+      };
+      document.querySelector('nav a.active').classList.remove('active');
+      const newLang = document.querySelector(`nav a[href='#${lang}']`);
+      newLang.classList.add('active');
+      
+      document.getElementById('start').innerHTML = `<h2>${text[lang].start}</h2><p>Hier kannst du dich schnell und professionell bewerben.</p>`;
+      document.getElementById('login').innerHTML = `<h2>${text[lang].login}</h2>...`;
+      document.getElementById('bewerbung').innerHTML = `<h2>${text[lang].bewerbung}</h2>...`;
+      document.getElementById('management').innerHTML = `<h2>${text[lang].management}</h2>...`;
+      document.getElementById('admin-section').innerHTML = `<h2>${text[lang].adminDashboard}</h2>...`;
     }
   </script>
 </body>

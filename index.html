@@ -97,6 +97,21 @@
       padding: 15px;
       border-radius: 8px;
       text-align: left;
+      position: relative;
+    }
+    .delete-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #e53935;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .delete-button:hover {
+      background-color: #c62828;
     }
   </style>
 </head>
@@ -167,6 +182,7 @@
         alert("Login erfolgreich!");
         isAdmin = true;
         document.getElementById("admin-section").style.display = "block";
+        zeigeBewerbungen();
       } else {
         alert("Login fehlgeschlagen. Bitte überprüfe deine Eingaben.");
       }
@@ -200,12 +216,24 @@
     function zeigeBewerbungen() {
       const liste = document.getElementById("bewerbungsliste");
       liste.innerHTML = "";
-      bewerbungsliste.forEach((b) => {
+      bewerbungsliste.forEach((b, index) => {
         const eintrag = document.createElement("div");
         eintrag.classList.add("bewerbung-eintrag");
-        eintrag.innerHTML = `<strong>${b.name}</strong><br><small>${b.email}</small><p>${b.nachricht}</p>`;
+        eintrag.innerHTML = `
+          <strong>${b.name}</strong><br>
+          <small>${b.email}</small>
+          <p>${b.nachricht}</p>
+          <button class="delete-button" onclick="loescheBewerbung(${index})">Löschen</button>
+        `;
         liste.appendChild(eintrag);
       });
+    }
+
+    function loescheBewerbung(index) {
+      if (confirm("Möchtest du diese Bewerbung wirklich löschen?")) {
+        bewerbungsliste.splice(index, 1);
+        zeigeBewerbungen();
+      }
     }
   </script>
 </body>

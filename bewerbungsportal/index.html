@@ -67,20 +67,18 @@
     }
     #admin-section {
       display: none;
-    }
-    table {
-      margin: 20px auto;
-      width: 90%;
-      max-width: 600px;
-      border-collapse: collapse;
       background-color: #1e1e1e;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 8px;
     }
-    th, td {
-      padding: 10px;
-      border: 1px solid #333;
-    }
-    th {
-      background-color: #2c2c2c;
+    .bewerbung-eintrag {
+      background-color: #2a2a2a;
+      margin: 10px auto;
+      max-width: 600px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: left;
     }
   </style>
 </head>
@@ -112,10 +110,10 @@
 
     <section id="bewerbung">
       <h2>Bewerbung</h2>
-      <form action="bewerbung_speichern.php" method="POST">
-        <input type="text" name="name" placeholder="Name" required />
-        <input type="email" name="email" placeholder="E-Mail" required />
-        <textarea name="nachricht" placeholder="Deine Nachricht..." rows="5" required></textarea>
+      <form onsubmit="handleBewerbung(event)">
+        <input type="text" id="bewerberName" placeholder="Name" required />
+        <input type="email" id="bewerberEmail" placeholder="E-Mail" required />
+        <textarea id="bewerberNachricht" placeholder="Deine Nachricht..." rows="5" required></textarea>
         <button type="submit">Absenden</button>
       </form>
     </section>
@@ -130,18 +128,7 @@
 
     <section id="admin-section">
       <h2>Alle Bewerbungen</h2>
-      <table id="bewerbungen-tabelle">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>E-Mail</th>
-            <th>Nachricht</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Bewerbungen werden hier hinzugefügt -->
-        </tbody>
-      </table>
+      <div id="bewerbungsliste"></div>
     </section>
   </main>
 
@@ -151,6 +138,7 @@
 
   <script>
     let isAdmin = false;
+    const bewerbungsliste = [];
 
     function handleLogin(event) {
       event.preventDefault();
@@ -161,10 +149,47 @@
         alert("Login erfolgreich!");
         isAdmin = true;
         document.getElementById("admin-section").style.display = "block";
-        document.getElementById("login").style.display = "none";
       } else {
         alert("Login fehlgeschlagen. Bitte überprüfe deine Eingaben.");
       }
+    }
+
+    function handleBewerbung(event) {
+      event.preventDefault();
+      const name = document.getElementById('bewerberName').value;
+      const email = document.getElementById('bewerberEmail').value;
+      const nachricht = document.getElementById('bewerberNachricht').value;
+
+      const eintrag = {
+        name,
+        email,
+        nachricht
+      };
+
+      bewerbungsliste.push(eintrag);
+
+      alert("Bewerbung erfolgreich übermittelt!");
+
+      // Felder zurücksetzen
+      document.getElementById('bewerberName').value = "";
+      document.getElementById('bewerberEmail').value = "";
+      document.getElementById('bewerberNachricht').value = "";
+
+      // Wenn Admin eingeloggt ist, anzeigen
+      if (isAdmin) {
+        zeigeBewerbungen();
+      }
+    }
+
+    function zeigeBewerbungen() {
+      const liste = document.getElementById("bewerbungsliste");
+      liste.innerHTML = "";
+      bewerbungsliste.forEach((b, i) => {
+        const eintrag = document.createElement("div");
+        eintrag.classList.add("bewerbung-eintrag");
+        eintrag.innerHTML = `<strong>${b.name}</strong><br>${b.email}<br><p>${b.nachricht}</p>`;
+        liste.appendChild(eintrag);
+      });
     }
   </script>
 </body>

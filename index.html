@@ -185,11 +185,11 @@
   <header>
     <h1>Bewerbungsportal</h1>
     <nav>
-      <a href="#start" onclick="changeLang('de')" class="active">Startseite</a>
-      <a href="#login" onclick="changeLang('de')">Login</a>
-      <a href="#bewerbung" onclick="changeLang('de')">Bewerbung</a>
-      <a href="#management" onclick="changeLang('de')">Management</a>
-      <a href="#start" onclick="changeLang('en')">EN</a>
+      <a href="#start" data-lang="de" class="active">Startseite</a>
+      <a href="#login" data-lang="de">Login</a>
+      <a href="#bewerbung" data-lang="de">Bewerbung</a>
+      <a href="#management" data-lang="de">Management</a>
+      <a href="#start" data-lang="en">EN</a>
       <button onclick="toggleDarkMode()">🌙 / 🌞</button>
     </nav>
   </header>
@@ -202,7 +202,7 @@
 
     <section id="login">
       <h2>Login für Administratoren</h2>
-      <form onsubmit="handleLogin(event)">
+      <form id="loginForm">
         <input type="text" id="username" placeholder="Benutzername" required />
         <input type="password" id="password" placeholder="Passwort" required />
         <button type="submit">Einloggen</button>
@@ -211,7 +211,7 @@
 
     <section id="bewerbung">
       <h2>Online Bewerbung</h2>
-      <form onsubmit="handleBewerbung(event)">
+      <form id="bewerbungForm">
         <input type="text" id="bewerberName" placeholder="Dein Name" required />
         <input type="email" id="bewerberEmail" placeholder="Deine E-Mail-Adresse" required />
         <textarea id="bewerberNachricht" placeholder="Deine Nachricht..." rows="5" required></textarea>
@@ -238,6 +238,9 @@
   </footer>
 
   <script>
+    document.getElementById("loginForm").addEventListener("submit", handleLogin);
+    document.getElementById("bewerbungForm").addEventListener("submit", handleBewerbung);
+
     let isAdmin = false;
     const bewerbungsliste = [];
 
@@ -246,6 +249,7 @@
       const user = document.getElementById('username').value;
       const pass = document.getElementById('password').value;
 
+      // Hier könnte eine API-Anfrage an den Server zur Authentifizierung gesendet werden
       if (user === "admin" && pass === "passwort") {
         alert("Login erfolgreich!");
         isAdmin = true;
@@ -313,14 +317,12 @@
     }
 
     function exportBewerbungen() {
-      const csvRows = [
-        ["Name", "E-Mail", "Nachricht", "Lebenslauf", "Status"]
+      const csvData = [
+        ["Name", "E-Mail", "Nachricht", "Lebenslauf", "Status"],
+        ...bewerbungsliste.map(b => [b.name, b.email, b.nachricht, b.datei, b.status])
       ];
-      bewerbungsliste.forEach(b => {
-        csvRows.push([b.name, b.email, b.nachricht, b.datei, b.status]);
-      });
-      const csvData = csvRows.map(row => row.join(",")).join("\n");
-      const blob = new Blob([csvData], { type: 'text/csv' });
+      const csvString = csvData.map(row => row.join(",")).join("\n");
+      const blob = new Blob([csvString], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -330,35 +332,14 @@
     }
 
     function changeLang(lang) {
-      const text = {
-        de: {
-          start: "Willkommen!",
-          login: "Login für Administratoren",
-          bewerbung: "Online Bewerbung",
-          management: "Management",
-          adminDashboard: "Admin Dashboard",
-          export: "Export als CSV",
-          logout: "Abmelden",
-        },
-        en: {
-          start: "Welcome!",
-          login: "Admin Login",
-          bewerbung: "Online Application",
-          management: "Management",
-          adminDashboard: "Admin Dashboard",
-          export: "Export as CSV",
-          logout: "Logout",
-        },
-      };
-      document.querySelector('nav a.active').classList.remove('active');
-      const newLang = document.querySelector(`nav a[href='#${lang}']`);
-      newLang.classList.add('active');
-      
-      document.getElementById('start').innerHTML = `<h2>${text[lang].start}</h2><p>Hier kannst du dich schnell und professionell bewerben.</p>`;
-      document.getElementById('login').innerHTML = `<h2>${text[lang].login}</h2>...`;
-      document.getElementById('bewerbung').innerHTML = `<h2>${text[lang].bewerbung}</h2>...`;
-      document.getElementById('management').innerHTML = `<h2>${text[lang].management}</h2>...`;
-      document.getElementById('admin-section').innerHTML = `<h2>${text[lang].adminDashboard}</h2>...`;
+      fetch(`translations/${lang}.json`)
+        .then(response => response.json())
+        .then(data => {
+          document.querySelectorAll('[data-lang]').forEach(el => {
+            const langKey = el.getAttribute('data-lang');
+            el.innerHTML = data[langKey] || el.innerHTML;
+          });
+        });
     }
 
     function toggleDarkMode() {

@@ -16,6 +16,8 @@
       --input-bg: #2a2d34;
       --danger: #e53935;
       --danger-hover: #c62828;
+      --primary-bg: #f0f1f6;
+      --footer-bg: #212121;
     }
 
     * {
@@ -25,7 +27,7 @@
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg-dark);
+      background-color: var(--primary-bg);
       color: var(--text-light);
       display: flex;
       flex-direction: column;
@@ -83,6 +85,7 @@
       margin-top: 20px;
       padding: 20px;
       flex-grow: 1;
+      background-color: var(--primary-bg);
     }
 
     section {
@@ -119,7 +122,7 @@
       margin-top: auto;
       font-size: 0.85em;
       opacity: 0.6;
-      background-color: var(--card-dark);
+      background-color: var(--footer-bg);
       padding: 20px;
       text-align: center;
     }
@@ -185,11 +188,11 @@
   <header>
     <h1>Bewerbungsportal</h1>
     <nav>
-      <a href="#start" data-lang="de" class="active">Startseite</a>
-      <a href="#login" data-lang="de">Login</a>
-      <a href="#bewerbung" data-lang="de">Bewerbung</a>
-      <a href="#management" data-lang="de">Management</a>
-      <a href="#start" data-lang="en">EN</a>
+      <a href="#start" onclick="changeLang('de')" class="active">Startseite</a>
+      <a href="#login" onclick="changeLang('de')">Login</a>
+      <a href="#bewerbung" onclick="changeLang('de')">Bewerbung</a>
+      <a href="#management" onclick="changeLang('de')">Management</a>
+      <a href="#start" onclick="changeLang('en')">EN</a>
       <button onclick="toggleDarkMode()">🌙 / 🌞</button>
     </nav>
   </header>
@@ -197,12 +200,12 @@
   <main>
     <section id="start">
       <h2>Willkommen!</h2>
-      <p>Hier kannst du dich schnell und professionell bewerben.</p>
+      <p>Erstellen Sie Ihre Bewerbung in wenigen einfachen Schritten und starten Sie Ihre Karriere.</p>
     </section>
 
     <section id="login">
       <h2>Login für Administratoren</h2>
-      <form id="loginForm">
+      <form onsubmit="handleLogin(event)">
         <input type="text" id="username" placeholder="Benutzername" required />
         <input type="password" id="password" placeholder="Passwort" required />
         <button type="submit">Einloggen</button>
@@ -211,10 +214,10 @@
 
     <section id="bewerbung">
       <h2>Online Bewerbung</h2>
-      <form id="bewerbungForm">
-        <input type="text" id="bewerberName" placeholder="Dein Name" required />
-        <input type="email" id="bewerberEmail" placeholder="Deine E-Mail-Adresse" required />
-        <textarea id="bewerberNachricht" placeholder="Deine Nachricht..." rows="5" required></textarea>
+      <form onsubmit="handleBewerbung(event)">
+        <input type="text" id="bewerberName" placeholder="Ihr Name" required />
+        <input type="email" id="bewerberEmail" placeholder="Ihre E-Mail-Adresse" required />
+        <textarea id="bewerberNachricht" placeholder="Ihre Nachricht..." rows="5" required></textarea>
         <input type="file" id="lebenslauf" accept="application/pdf" required />
         <button type="submit">Bewerbung absenden</button>
       </form>
@@ -222,12 +225,12 @@
 
     <section id="management">
       <h2>Management</h2>
-      <p>Verwalte deine Bewerbungen bequem an einem Ort.</p>
+      <p>Verwalten Sie Ihre Bewerbungen einfach und effizient.</p>
     </section>
 
     <section id="admin-section">
       <h2>Admin Dashboard</h2>
-      <p>Verwalte alle eingegangenen Bewerbungen hier:</p>
+      <p>Verwalten Sie alle eingegangenen Bewerbungen hier:</p>
       <div id="bewerbungsliste"></div>
       <button onclick="exportBewerbungen()">Export als CSV</button>
     </section>
@@ -238,9 +241,6 @@
   </footer>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", handleLogin);
-    document.getElementById("bewerbungForm").addEventListener("submit", handleBewerbung);
-
     let isAdmin = false;
     const bewerbungsliste = [];
 
@@ -249,7 +249,6 @@
       const user = document.getElementById('username').value;
       const pass = document.getElementById('password').value;
 
-      // Hier könnte eine API-Anfrage an den Server zur Authentifizierung gesendet werden
       if (user === "admin" && pass === "passwort") {
         alert("Login erfolgreich!");
         isAdmin = true;
@@ -257,7 +256,7 @@
         zeigeBewerbungen();
         document.getElementById("login").style.display = "none";
       } else {
-        alert("Login fehlgeschlagen. Bitte überprüfe deine Eingaben.");
+        alert("Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.");
       }
     }
 
@@ -310,19 +309,21 @@
     }
 
     function loescheBewerbung(index) {
-      if (confirm("Möchtest du diese Bewerbung wirklich löschen?")) {
+      if (confirm("Möchten Sie diese Bewerbung wirklich löschen?")) {
         bewerbungsliste.splice(index, 1);
         zeigeBewerbungen();
       }
     }
 
     function exportBewerbungen() {
-      const csvData = [
-        ["Name", "E-Mail", "Nachricht", "Lebenslauf", "Status"],
-        ...bewerbungsliste.map(b => [b.name, b.email, b.nachricht, b.datei, b.status])
+      const csvRows = [
+        ["Name", "E-Mail", "Nachricht", "Lebenslauf", "Status"]
       ];
-      const csvString = csvData.map(row => row.join(",")).join("\n");
-      const blob = new Blob([csvString], { type: 'text/csv' });
+      bewerbungsliste.forEach(b => {
+        csvRows.push([b.name, b.email, b.nachricht, b.datei, b.status]);
+      });
+      const csvData = csvRows.map(row => row.join(",")).join("\n");
+      const blob = new Blob([csvData], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -332,14 +333,35 @@
     }
 
     function changeLang(lang) {
-      fetch(`translations/${lang}.json`)
-        .then(response => response.json())
-        .then(data => {
-          document.querySelectorAll('[data-lang]').forEach(el => {
-            const langKey = el.getAttribute('data-lang');
-            el.innerHTML = data[langKey] || el.innerHTML;
-          });
-        });
+      const text = {
+        de: {
+          start: "Willkommen!",
+          login: "Login für Administratoren",
+          bewerbung: "Online Bewerbung",
+          management: "Management",
+          adminDashboard: "Admin Dashboard",
+          export: "Export als CSV",
+          logout: "Abmelden",
+        },
+        en: {
+          start: "Welcome!",
+          login: "Admin Login",
+          bewerbung: "Online Application",
+          management: "Management",
+          adminDashboard: "Admin Dashboard",
+          export: "Export as CSV",
+          logout: "Logout",
+        },
+      };
+      document.querySelector('nav a.active').classList.remove('active');
+      const newLang = document.querySelector(`nav a[href='#${lang}']`);
+      newLang.classList.add('active');
+      
+      document.getElementById('start').innerHTML = `<h2>${text[lang].start}</h2><p>Erstellen Sie Ihre Bewerbung in wenigen einfachen Schritten und starten Sie Ihre Karriere.</p>`;
+      document.getElementById('login').innerHTML = `<h2>${text[lang].login}</h2>...`;
+      document.getElementById('bewerbung').innerHTML = `<h2>${text[lang].bewerbung}</h2>...`;
+      document.getElementById('management').innerHTML = `<h2>${text[lang].management}</h2>...`;
+      document.getElementById('admin-section').innerHTML = `<h2>${text[lang].adminDashboard}</h2>...`;
     }
 
     function toggleDarkMode() {

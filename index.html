@@ -6,7 +6,6 @@
   <title>Bewerbungsportal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* Dark Mode und allgemeines Design */
     :root {
       --bg-dark: #0f1117;
       --card-dark: #1b1e24;
@@ -141,20 +140,10 @@
       background-color: var(--danger-hover);
     }
 
-    .progress-bar {
-      background-color: var(--accent);
-      height: 8px;
-      border-radius: 4px;
-      margin-top: 10px;
-      width: 0;
-    }
-
-    /* Dark Mode Umschalter */
     .dark-mode {
-      background-color: var(--bg-dark);
-      color: var(--text-light);
+      background-color: #121212;
+      color: #fff;
     }
-
   </style>
 </head>
 <body>
@@ -165,8 +154,8 @@
       <a href="#login" onclick="changeLang('de')">Login</a>
       <a href="#bewerbung" onclick="changeLang('de')">Bewerbung</a>
       <a href="#management" onclick="changeLang('de')">Management</a>
-      <a href="#faq" onclick="changeLang('de')">FAQ</a>
       <a href="#start" onclick="changeLang('en')">EN</a>
+      <button onclick="toggleDarkMode()">🌙 / 🌞</button>
     </nav>
   </header>
 
@@ -199,22 +188,14 @@
     <section id="management">
       <h2>Management</h2>
       <p>Verwalte deine Bewerbungen bequem an einem Ort.</p>
-      <div id="bewerbungsliste"></div>
     </section>
 
     <section id="admin-section">
       <h2>Admin Dashboard</h2>
       <p>Verwalte alle eingegangenen Bewerbungen hier:</p>
-      <div id="bewerbungsliste-admin"></div>
+      <div id="bewerbungsliste"></div>
       <button onclick="exportBewerbungen()">Export als CSV</button>
-      <button onclick="toggleDarkMode()">Dark Mode umschalten</button>
     </section>
-
-    <section id="faq">
-      <h2>Häufige Fragen</h2>
-      <p>Hier findest du Antworten auf häufig gestellte Fragen.</p>
-    </section>
-
   </main>
 
   <footer>
@@ -254,9 +235,7 @@
         email,
         nachricht,
         datei,
-        status: 'In Bearbeitung',
-        bewertung: 0,
-        kommentare: []
+        status: "In Bearbeitung" // Status hinzugefügt
       };
 
       bewerbungsliste.push(eintrag);
@@ -274,7 +253,7 @@
     }
 
     function zeigeBewerbungen() {
-      const liste = document.getElementById("bewerbungsliste-admin");
+      const liste = document.getElementById("bewerbungsliste");
       liste.innerHTML = "";
       bewerbungsliste.forEach((b, index) => {
         const eintrag = document.createElement("div");
@@ -315,10 +294,6 @@
       URL.revokeObjectURL(url);
     }
 
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
-    }
-
     function changeLang(lang) {
       const text = {
         de: {
@@ -327,7 +302,8 @@
           bewerbung: "Online Bewerbung",
           management: "Management",
           adminDashboard: "Admin Dashboard",
-          faq: "FAQ",
+          export: "Export als CSV",
+          logout: "Abmelden",
         },
         en: {
           start: "Welcome!",
@@ -335,19 +311,23 @@
           bewerbung: "Online Application",
           management: "Management",
           adminDashboard: "Admin Dashboard",
-          faq: "FAQ",
+          export: "Export as CSV",
+          logout: "Logout",
         },
       };
       document.querySelector('nav a.active').classList.remove('active');
       const newLang = document.querySelector(`nav a[href='#${lang}']`);
       newLang.classList.add('active');
-
+      
       document.getElementById('start').innerHTML = `<h2>${text[lang].start}</h2><p>Hier kannst du dich schnell und professionell bewerben.</p>`;
       document.getElementById('login').innerHTML = `<h2>${text[lang].login}</h2>...`;
       document.getElementById('bewerbung').innerHTML = `<h2>${text[lang].bewerbung}</h2>...`;
       document.getElementById('management').innerHTML = `<h2>${text[lang].management}</h2>...`;
-      document.getElementById('faq').innerHTML = `<h2>${text[lang].faq}</h2>...`;
       document.getElementById('admin-section').innerHTML = `<h2>${text[lang].adminDashboard}</h2>...`;
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
   </script>
 </body>

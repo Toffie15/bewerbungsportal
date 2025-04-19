@@ -15,6 +15,7 @@
       --input-bg: #2a2d34;
       --danger: #e53935;
       --danger-hover: #c62828;
+      --success: #4caf50;
     }
 
     * {
@@ -121,6 +122,11 @@
       text-align: left;
       position: relative;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .bewerbung-eintrag:hover {
+      transform: translateY(-5px);
     }
 
     .delete-button {
@@ -138,6 +144,14 @@
 
     .delete-button:hover {
       background-color: var(--danger-hover);
+    }
+
+    .search-bar {
+      padding: 10px;
+      background-color: var(--input-bg);
+      border-radius: 10px;
+      color: #fff;
+      width: 100%;
     }
   </style>
 </head>
@@ -171,7 +185,7 @@
     <section id="bewerbung">
       <h2>Online Bewerbung</h2>
       <form onsubmit="handleBewerbung(event)">
-        <input type="text" id="bewerberName" placeholder="Dein Name" required />
+        <input type="text" id="bewerberName" placeholder="Dein Name" required pattern="[A-Za-z\s]+" />
         <input type="email" id="bewerberEmail" placeholder="Deine E-Mail-Adresse" required />
         <textarea id="bewerberNachricht" placeholder="Deine Nachricht..." rows="5" required></textarea>
         <input type="file" id="lebenslauf" accept="application/pdf" required />
@@ -182,6 +196,7 @@
     <section id="management">
       <h2>Management</h2>
       <p>Verwalte deine Bewerbungen bequem an einem Ort.</p>
+      <input type="text" class="search-bar" id="search" oninput="filterBewerbungen()" placeholder="Suche nach Bewerbungen..." />
     </section>
 
     <section id="admin-section">
@@ -189,6 +204,7 @@
       <p>Verwalte alle eingegangenen Bewerbungen hier:</p>
       <div id="bewerbungsliste"></div>
       <button onclick="exportBewerbungen()">Export als CSV</button>
+      <button onclick="exportBewerbungenPDF()">Export als PDF</button>
     </section>
   </main>
 
@@ -228,11 +244,11 @@
         name,
         email,
         nachricht,
-        datei
+        datei,
+        status: "In Bearbeitung"
       };
 
       bewerbungsliste.push(eintrag);
-
       alert("Bewerbung erfolgreich übermittelt!");
 
       document.getElementById('bewerberName').value = "";
@@ -256,6 +272,7 @@
           <small>${b.email}</small>
           <p>${b.nachricht}</p>
           <p><em>Lebenslauf: ${b.datei}</em></p>
+          <p><strong>Status: </strong>${b.status}</p>
           <button class="delete-button" onclick="loescheBewerbung(${index})">Löschen</button>
         `;
         liste.appendChild(eintrag);
@@ -286,37 +303,36 @@
       URL.revokeObjectURL(url);
     }
 
-    function changeLang(lang) {
-      // Übersetzungen im Frontend für Deutsch und Englisch
-      const text = {
-        de: {
-          start: "Willkommen!",
-          login: "Login für Administratoren",
-          bewerbung: "Online Bewerbung",
-          management: "Management",
-          adminDashboard: "Admin Dashboard",
-          export: "Export als CSV",
-          logout: "Abmelden",
-        },
-        en: {
-          start: "Welcome!",
-          login: "Admin Login",
-          bewerbung: "Online Application",
-          management: "Management",
-          adminDashboard: "Admin Dashboard",
-          export: "Export as CSV",
-          logout: "Logout",
-        },
-      };
-      document.querySelector('nav a.active').classList.remove('active');
-      const newLang = document.querySelector(`nav a[href='#${lang}']`);
-      newLang.classList.add('active');
-      
-      document.getElementById('start').innerHTML = `<h2>${text[lang].start}</h2><p>Hier kannst du dich schnell und professionell bewerben.</p>`;
-      document.getElementById('login').innerHTML = `<h2>${text[lang].login}</h2>...`;
-      document.getElementById('bewerbung').innerHTML = `<h2>${text[lang].bewerbung}</h2>...`;
-      document.getElementById('management').innerHTML = `<h2>${text[lang].management}</h2>...`;
-      document.getElementById('admin-section').innerHTML = `<h2>${text[lang].adminDashboard}</h2>...`;
+    function exportBewerbungenPDF() {
+      // Beispielhafte Funktion zum Exportieren als PDF
+      alert("Export als PDF wird noch implementiert.");
+    }
+
+    function filterBewerbungen() {
+      const filterText = document.getElementById('search').value.toLowerCase();
+      const filteredBewerbungen = bewerbungsliste.filter(bewerbung => 
+        bewerbung.name.toLowerCase().includes(filterText) || 
+        bewerbung.email.toLowerCase().includes(filterText)
+      );
+      const liste = document.getElementById("bewerbungsliste");
+      liste.innerHTML = "";
+      filteredBewerbungen.forEach((b, index) => {
+        const eintrag = document.createElement("div");
+        eintrag.classList.add("bewerbung-eintrag");
+        eintrag.innerHTML = `
+          <strong>${b.name}</strong><br>
+          <small>${b.email}</small>
+          <p>${b.nachricht}</p>
+          <p><em>Lebenslauf: ${b.datei}</em></p>
+          <p><strong>Status: </strong>${b.status}</p>
+        `;
+        liste.appendChild(eintrag);
+      });
+    }
+
+    function changeLang(language) {
+      // Sprachwechsel-Logik hinzufügen
+      alert(`Sprache geändert zu ${language.toUpperCase()}`);
     }
   </script>
 </body>
